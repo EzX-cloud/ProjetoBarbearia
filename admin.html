@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin - Barbearia Unipix</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    section {
+      background: white;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+      max-width: 700px;
+      width: 100%;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.5rem;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      text-align: left;
+    }
+    #editor {
+      width: 100%;
+      height: 150px;
+      font-family: monospace;
+      font-size: 1rem;
+      margin-top: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 0.5rem;
+      resize: vertical;
+    }
+    #preview {
+      background: #f0f0f0;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 5px;
+      min-height: 100px;
+      overflow-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container-header">
+      <h1>Barbearia Unipix</h1>
+      <a href="index.html" class="home-button">Home</a>
+    </div>
+  </header>
+
+  <main class="dashboard">
+    <h2>Painel Administrativo - Admin</h2>
+
+    <section>
+      <h3>Acompanhamento Financeiro</h3>
+      <p>Visualize e acompanhe as finanças da barbearia:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Descrição</th>
+            <th>Valor (R$)</th>
+            <th>Tipo</th>
+          </tr>
+        </thead>
+        <tbody id="financeiro-tabela">
+          <tr><td>01/05/2025</td><td>Corte masculino</td><td>50,00</td><td>Entrada</td></tr>
+          <tr><td>02/05/2025</td><td>Compra de produtos</td><td>120,00</td><td>Saída</td></tr>
+          <tr><td>03/05/2025</td><td>Barba</td><td>40,00</td><td>Entrada</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h3>Abertura de Agenda</h3>
+      <p>Gerencie os horários disponíveis para marcação:</p>
+      <input type="date" id="data-agenda" />
+      <select id="horario-agenda">
+        <option value="09:00">09:00</option>
+        <option value="10:00">10:00</option>
+        <option value="11:00">11:00</option>
+        <option value="13:00">13:00</option>
+        <option value="14:00">14:00</option>
+        <option value="15:00">15:00</option>
+      </select>
+      <button id="btn-adicionar-agenda">Adicionar Horário</button>
+      <ul id="lista-agenda"></ul>
+    </section>
+
+    <section>
+      <h3>Modificações Visuais Online</h3>
+      <p>Edite o conteúdo HTML da página e veja o resultado:</p>
+      <textarea id="editor" placeholder="Digite aqui o conteúdo HTML..."></textarea>
+      <button id="btn-atualizar-preview">Atualizar Preview</button>
+      <div id="preview"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Barbearia Unipix - Todos os direitos reservados | Contato: 83 99649-8112</p>
+  </footer>
+
+  <script>
+    // Agenda simples
+    const btnAdicionarAgenda = document.getElementById('btn-adicionar-agenda');
+    const listaAgenda = document.getElementById('lista-agenda');
+    btnAdicionarAgenda.addEventListener('click', () => {
+      const data = document.getElementById('data-agenda').value;
+      const horario = document.getElementById('horario-agenda').value;
+      if (!data) {
+        alert('Por favor, selecione uma data.');
+        return;
+      }
+      const li = document.createElement('li');
+      li.textContent = `Data: ${data} - Horário: ${horario}`;
+      listaAgenda.appendChild(li);
+    });
+
+    // Editor online
+    const btnAtualizarPreview = document.getElementById('btn-atualizar-preview');
+    const editor = document.getElementById('editor');
+    const preview = document.getElementById('preview');
+
+    btnAtualizarPreview.addEventListener('click', () => {
+      preview.innerHTML = editor.value;
+    });
+  </script>
+</body>
+</html>

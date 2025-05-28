@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login - Barbearia Unipix</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    #modal-cadastro {
+      display: none;
+      position: fixed;
+      top:0; left:0; right:0; bottom:0;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+    }
+    #modal-cadastro .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 400px;
+      width: 90%;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container-header">
+      <h1>Barbearia Unipix</h1>
+      <a href="index.html" class="home-button">Home</a>
+    </div>
+  </header>
+
+  <main class="dashboard">
+    <h2>Login</h2>
+    <form id="login-form">
+      <label for="usuario">Usuário:</label><br>
+      <input type="text" id="usuario" required><br><br>
+
+      <label for="senha">Senha:</label><br>
+      <input type="password" id="senha" required><br><br>
+
+      <button type="submit">Entrar</button>
+    </form>
+    <p id="erro-login" style="color:red; display:none;">Usuário ou senha inválidos.</p>
+
+    <hr>
+
+    <button id="btn-cadastrar">Cadastrar Novo Usuário</button>
+    <button id="btn-sem-login">Continuar como Cliente Sem Login</button>
+  </main>
+
+  <div id="modal-cadastro">
+    <div class="modal-content">
+      <h3>Cadastro de Usuário</h3>
+      <form id="cadastro-form">
+        <label for="novo-usuario">Nome de usuário:</label><br>
+        <input type="text" id="novo-usuario" required><br><br>
+
+        <label for="nova-senha">Senha:</label><br>
+        <input type="password" id="nova-senha" required><br><br>
+
+        <label for="tipo-usuario">Tipo de usuário:</label><br>
+        <select id="tipo-usuario" required>
+          <option value="" disabled selected>Selecione o tipo</option>
+          <option value="cliente">Cliente</option>
+          <option value="mestre">Mestre</option>
+          <option value="admin">Admin</option>
+        </select><br><br>
+
+        <label for="telefone-usuario">Telefone:</label><br>
+        <input type="tel" id="telefone-usuario" placeholder="83 99999-9999" required><br><br>
+
+        <label for="email-usuario">Email:</label><br>
+        <input type="email" id="email-usuario" placeholder="email@exemplo.com" required><br><br>
+
+        <button type="submit">Cadastrar</button>
+        <button type="button" id="fechar-modal">Cancelar</button>
+      </form>
+
+      <p id="msg-cadastro" style="color:green; display:none;">
+        Cadastro realizado com sucesso! Faça login.
+        <br><br>
+        <button id="btn-fechar-sucesso">Fechar</button>
+      </p>
+      <p id="msg-erro-cadastro" style="color:red; display:none;">Usuário já existe.</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 Barbearia Unipix - Todos os direitos reservados | Contato: 83 99649-8112</p>
+  </footer>
+
+  <script>
+    const usuariosFixos = {
+      mestre: { senha: 'mestre123', tipo: 'mestre', telefone: '83 90000-0001', email: 'mestre@unipix.com' },
+      admin: { senha: 'admin123', tipo: 'admin', telefone: '83 90000-0002', email: 'admin@unipix.com' },
+      cliente: { senha: 'cliente123', tipo: 'cliente', telefone: '83 90000-0003', email: 'cliente@unipix.com' }
+    };
+
+    function carregarUsuarios() {
+      const dados = localStorage.getItem('usuariosBarbearia');
+      if (dados) {
+        return JSON.parse(dados);
+      } else {
+        localStorage.setItem('usuariosBarbearia', JSON.stringify(usuariosFixos));
+        return {...usuariosFixos};
+      }
+    }
+
+    function salvarUsuarios(usuarios) {
+      localStorage.setItem('usuariosBarbearia', JSON.stringify(usuarios));
+    }
+
+    let usuarios = carregarUsuarios();
+
+    const formLogin = document.getElementById('login-form');
+    const erroLogin = document.getElementById('erro-login');
+
+    const btnCadastrar = document.getElementById('btn-cadastrar');
+    const btnSemLogin = document.getElementById('btn-sem-login');
+
+    const modalCadastro = document.getElementById('modal-cadastro');
+    const cadastroForm = document.getElementById('cadastro-form');
+    const msgCadastro = document.getElementById('msg-cadastro');
+    const msgErroCadastro = document.getElementById('msg-erro-cadastro');
+    const fecharModal = document.getElementById('fechar-modal');
+    const btnFecharSucesso = document.getElementById('btn-fechar-sucesso');
+
+    formLogin.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const usuario = document.getElementById('usuario').value.toLowerCase();
+      const senha = document.getElementById('senha').value;
+
+      if (usuarios[usuario] && usuarios[usuario].senha === senha) {
+        erroLogin.style.display = 'none';
+        const tipo = usuarios[usuario].tipo;
+        if (tipo === 'mestre') {
+          window.location.href = 'mestre.html';
+        } else if (tipo === 'admin') {
+          window.location.href = 'admin.html';
+        } else {
+          window.location.href = 'cliente.html';
+        }
+      } else {
+        erroLogin.style.display = 'block';
+      }
+    });
+
+    btnCadastrar.addEventListener('click', () => {
+      modalCadastro.style.display = 'flex';
+      msgCadastro.style.display = 'none';
+      msgErroCadastro.style.display = 'none';
+      cadastroForm.style.display = 'block';
+    });
+
+    fecharModal.addEventListener('click', () => {
+      modalCadastro.style.display = 'none';
+    });
+
+    btnFecharSucesso.addEventListener('click', () => {
+      modalCadastro.style.display = 'none';
+    });
+
+    cadastroForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const novoUsuario = document.getElementById('novo-usuario').value.toLowerCase();
+      const novaSenha = document.getElementById('nova-senha').value;
+      const tipoUsuario = document.getElementById('tipo-usuario').value;
+      const telefoneUsuario = document.getElementById('telefone-usuario').value;
+      const emailUsuario = document.getElementById('email-usuario').value;
+
+      if (usuarios[novoUsuario]) {
+        msgErroCadastro.style.display = 'block';
+        msgCadastro.style.display = 'none';
+      } else {
+        usuarios[novoUsuario] = { 
+          senha: novaSenha, 
+          tipo: tipoUsuario, 
+          telefone: telefoneUsuario, 
+          email: emailUsuario 
+        };
+        salvarUsuarios(usuarios);
+        msgCadastro.style.display = 'block';
+        msgErroCadastro.style.display = 'none';
+        cadastroForm.style.display = 'none';
+      }
+    });
+
+    btnSemLogin.addEventListener('click', () => {
+      window.location.href = 'cliente.html';
+    });
+  </script>
+</body>
+</html>

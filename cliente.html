@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cliente · Barbearia Unipix</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>Barbearia Unipix</h1>
+  <nav><a href="index.html">Home</a></nav>
+</header>
+
+<main>
+  <h2>Serviços &amp; Agendamento</h2>
+
+  <!-- Lista de serviços -->
+  <section>
+    <h3>Serviços disponíveis</h3>
+    <ul class="lista-servicos">
+      <li>Corte simples – R$ 30,00</li>
+      <li>Barba – R$ 20,00</li>
+      <li>Pacote corte + barba – R$ 45,00</li>
+    </ul>
+  </section>
+
+  <!-- Formulário de marcação -->
+  <section>
+    <h3>Marcar horário</h3>
+    <form id="form-agendar">
+      <label>Nome</label><input type="text" required>
+      <label>Telefone</label><input type="tel" required>
+      <label>Email</label><input type="email" required>
+      <label>Data</label><input type="date" id="data" required>
+      <label>Horário</label>
+      <select id="horario" required>
+        <option value="" disabled selected>Selecione o horário</option>
+        <option value="09:00">09:00</option>
+        <option value="10:00">10:00</option>
+        <option value="11:00">11:00</option>
+        <option value="13:00">13:00</option>
+        <option value="14:00">14:00</option>
+        <option value="15:00">15:00</option>
+      </select>
+      <button type="submit">Confirmar</button>
+    </form>
+
+    <div id="msg-ok" style="display:none; color:green; margin-top:1rem;">
+      Horário marcado com sucesso!
+      <button id="fechar-ok">Fechar</button>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>© 2025 Barbearia Unipix • Contato 83 99649-8112</p>
+</footer>
+
+<script>
+  const form = document.getElementById('form-agendar');
+  const msgOk = document.getElementById('msg-ok');
+  const btnFechar = document.getElementById('fechar-ok');
+  const inputData = document.getElementById('data');
+
+  // Define o valor mínimo da data para hoje (sem permitir datas anteriores)
+  function setMinDate() {
+    const hoje = new Date();
+    const yyyy = hoje.getFullYear();
+    const mm = String(hoje.getMonth()+1).padStart(2,'0');
+    const dd = String(hoje.getDate()).padStart(2,'0');
+    inputData.min = `${yyyy}-${mm}-${dd}`;
+  }
+  setMinDate();
+
+  form.addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const nome = form.querySelector('input[type="text"]').value;
+    const telefone = form.querySelector('input[type="tel"]').value;
+    const email = form.querySelector('input[type="email"]').value;
+    const data = inputData.value;
+    const horario = document.getElementById('horario').value;
+
+    if (!data || !horario) return;
+
+    // Exibir mensagem confirmando o agendamento com data e hora formatadas:
+    const dataFormatada = new Date(data + 'T' + horario).toLocaleString('pt-BR', {
+      dateStyle: 'full',
+      timeStyle: 'short'
+    });
+
+    msgOk.innerHTML = `
+      Horário marcado com sucesso para <strong>${dataFormatada}</strong>!
+      <button id="fechar-ok">Fechar</button>
+    `;
+    msgOk.style.display = 'block';
+
+    form.reset();
+    setMinDate(); // reconfigura a data mínima após reset
+
+    document.getElementById('fechar-ok').addEventListener('click', () => {
+      msgOk.style.display = 'none';
+    });
+  });
+</script>
+
+</body>
+</html>

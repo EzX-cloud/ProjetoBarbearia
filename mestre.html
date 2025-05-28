@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Painel Mestre - Barbearia Unipix</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="container-header">
+      <h1>Barbearia Unipix - Mestre</h1>
+      <a href="index.html" class="home-button">Home</a>
+    </div>
+  </header>
+
+  <main>
+    <h2>Painel Mestre</h2>
+
+    <section>
+      <h3>Clientes Cadastrados</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Usuário</th>
+            <th>Tipo</th>
+            <th>Telefone</th>
+            <th>Email</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="lista-usuarios-mestre"></tbody>
+      </table>
+      <!-- Botão para exportar -->
+      <button id="btn-exportar-excel">Exportar para Excel</button>
+    </section>
+
+    <section>
+      <h3>Adicionar Novo Usuário</h3>
+      <form id="form-novo-usuario">
+        <input type="text" id="novo-usuario" placeholder="Usuário" required />
+        <select id="novo-tipo" required>
+          <option value="">Tipo</option>
+          <option value="cliente">Cliente</option>
+          <option value="admin">Admin</option>
+        </select>
+        <input type="text" id="novo-telefone" placeholder="Telefone" required />
+        <input type="email" id="novo-email" placeholder="Email" required />
+        <input type="password" id="nova-senha" placeholder="Senha" required />
+        <button type="submit">Adicionar</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Barbearia Unipix - Todos os direitos reservados | Contato: 83 99649-8112</p>
+  </footer>
+
+  <script>
+    function carregarUsuarios() {
+      const dados = JSON.parse(localStorage.getItem('usuariosBarbearia') || '{}');
+      return dados;
+    }
+
+    function salvarUsuarios(usuarios) {
+      localStorage.setItem('usuariosBarbearia', JSON.stringify(usuarios));
+    }
+
+    function atualizarLista() {
+      const usuarios = carregarUsuarios();
+      const tbody = document.getElementById('lista-usuarios-mestre');
+      tbody.innerHTML = '';
+
+      Object.entries(usuarios).forEach(([usuario, dados]) => {
+        const linha = document.createElement('tr');
+        linha.innerHTML = `
+          <td>${usuario}</td>
+          <td>${dados.tipo}</td>
+          <td>${dados.telefone}</td>
+          <td>${dados.email}</td>
+          <td><button onclick="removerUsuario('${usuario}')">Remover</button></td>
+        `;
+        tbody.appendChild(linha);
+      });
+    }
+
+    function removerUsuario(usuario) {
+      const usuarios = carregarUsuarios();
+      delete usuarios[usuario];
+      salvarUsuarios(usuarios);
+      atualizarLista();
+    }
+
+    document.getElementById('form-novo-usuario').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const usuario = document.getElementById('novo-usuario').value.toLowerCase();
+      const tipo = document.getElementById('novo-tipo').value;
+      const telefone = document.getElementById('novo-telefone').value;
+      const email = document.getElementById('novo-email').value;
+      const senha = document.getElementById('nova-senha').value;
+
+      const usuarios = carregarUsuarios();
+
+      if (usuarios[usuario]) {
+        alert('Usuário já existe!');
+        return;
+      }
+
+      usuarios[usuario] = { tipo, telefone, email, senha };
+      salvarUsuarios(usuarios);
+      atualizarLista();
+      this.reset();
+    });
+
+    document.getElementById('btn-exportar-excel').addEventListener('click', () => {
+      const usuarios = carregarUsuarios();
+      const usuariosArray = Object.entries(usuarios).map(([usuario, dados]) => ({
+        usuario,
+        tipo: dados.tipo,
+        telefone: dados.telefone,
+        email: dados.email
+      }));
+
+      if (usuariosArray.length === 0) {
+        alert('Não há dados para exportar.');
+        return;
+      }
+
+      const cabecalho = ['Usuário', 'Tipo', 'Telefone', 'Email'];
+      let csvContent = cabecalho.join(';') + '\n';
+
+      usuariosArray.forEach(u => {
+        const linha = [u.usuario, u.tipo, u.telefone, u.email]
+          .map(campo => `"${String(campo).replace(/"/g, '""')}"`)
+          .join(';');
+        csvContent += linha + '\n';
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'usuarios.csv';
+      document.body.appendChild(link);
+
+      link.click();
+
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
+    });
+
+    atualizarLista();
+  </script>
+</body>
+</html>
